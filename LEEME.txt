@@ -1,0 +1,33 @@
+PRUEBA AR — ESFERA SOBRE CUADERNO
+================================
+CONTENIDO
+- index.html : página web que utiliza el celular observador.
+- marcador.html : abre el marcador HIRO en una segunda pantalla.
+
+PUBLICAR (GITHUB PAGES)
+1. Crea una cuenta en github.com si aún no la tienes.
+2. Crea un repositorio PUBLICO llamado, por ejemplo, 'prueba-ar-cuaderno'.
+3. Sube index.html y marcador.html en la raiz del repositorio.
+4. En Settings > Pages selecciona Deploy from a branch, rama main y carpeta /(root). Guarda.
+5. GitHub Pages publicará un sitio HTTPS. La URL habitual será:
+   https://TU_USUARIO.github.io/prueba-ar-cuaderno/
+   (El sitio puede necesitar un corto tiempo para estar publicado.)
+6. En el CELULAR DEL ALUMNO abre esa dirección en Safari/Chrome y permite la cámara.
+7. En OTRO CELULAR abre:
+   https://TU_USUARIO.github.io/prueba-ar-cuaderno/marcador.html
+8. Apoya el segundo celular sobre el cuaderno y apunta con el primero al marcador.
+9. Aparecerá una esfera roja SOBRE EL MARCADOR. Pulsa 'Ajustar esfera' para desplazarla.
+
+NOTAS
+- No se necesita imprimir ni instalar una app.
+- Se necesitan dos pantallas/dispositivos: uno para mostrar el marcador, otro para reconocerlo.
+- El marcador debe permanecer visible, plano, completo y con poco reflejo.
+- No es aún una calibración centimétrica del cuaderno; desplazamientos en unidades relativas al marcador.
+- Para superponer equipos a escala sobre la topografía se requerirá una calibración geométrica posterior.
+- HTML funciona con scripts en línea desde CDN; se requiere internet.
+- La cámara móvil generalmente exige HTTPS. Abrir index.html como file:// no es suficiente.
+- Si falla la cámara, comprueba permisos del navegador, HTTPS y que ninguna otra app esté usándola.
+
+Referencias:
+https://ar-js-org.github.io/AR.js-Docs/
+https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site

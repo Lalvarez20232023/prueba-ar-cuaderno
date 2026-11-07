@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>Laboratorio AR | Esfera sobre cuaderno</title>
+<!-- Dependencias alojadas externamente: se requiere conexión a Internet -->
+<script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+<style>
+  *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#101827;color:white}
+  .panel{position:fixed;left:12px;right:12px;top:max(12px,env(safe-area-inset-top));z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  .header{background:rgba(13,22,35,.89);padding:12px 15px;border:1px solid #5d6c83;border-radius:14px;backdrop-filter:blur(8px);pointer-events:auto}
+  .header strong{font-size:16px}.header p{font-size:12px;color:#d4e0ed;margin:6px 0 0;line-height:1.4}
+  .status{display:inline-block;padding:3px 9px;border-radius:99px;background:#78350f;color:#fde68a;font-size:12px;margin-top:7px}
+  .status.ok{background:#14532d;color:#dcfce7}
+  .controls{background:rgba(13,22,35,.92);border:1px solid #5d6c83;border-radius:12px;padding:12px;pointer-events:auto;display:none;max-width:450px}
+  .controls.visible{display:block}.control-row{display:flex;align-items:center;gap:8px;margin:9px 0}.control-row label{width:77px;flex-shrink:0;font-size:12px}.control-row input{flex:1;min-width:50px}.control-row output{min-width:38px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+  .buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  button{background:#2563eb;border:0;color:white;padding:9px 12px;border-radius:9px;font-weight:650;font-size:12px;cursor:pointer}
+  button.secondary{background:#334155}
+  .bottom{position:fixed;z-index:9999;bottom:max(15px,env(safe-area-inset-bottom));left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
+  .bottom button,.bottom a{pointer-events:auto}.bottom a{font-size:12px;color:#fff;background:#334155;padding:10px 12px;border-radius:9px;text-decoration:none;font-weight:bold}
+  .a-enter-vr,.a-enter-ar{display:none!important}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="header"><strong>Esfera AR — prueba de cuaderno</strong>
+  <p>Autoriza la cámara y apunta al marcador HIRO mostrado en <b>otro celular o monitor</b>. Mantén el marcador completo dentro de la imagen.</p>
+  <span id="estado" class="status" role="status">Buscando marcador HIRO…</span></div>
+  <div id="controles" class="controls" aria-label="Ajustar posición de la esfera">
+    <div class="control-row"><label for="x">Horizontal X</label><input id="x" type="range" min="-2" max="2" step="0.05" value="0"><output id="vx">0.00</output></div>
+    <div class="control-row"><label for="z">Profundidad Z</label><input id="z" type="range" min="-2" max="2" step="0.05" value="0"><output id="vz">0.00</output></div>
+    <div class="control-row"><label for="r">Radio esfera</label><input id="r" type="range" min="0.08" max="0.7" step="0.02" value="0.28"><output id="vr">0.28</output></div>
+    <div class="control-row"><label for="h">Altura base</label><input id="h" type="range" min="0" max="1.0" step="0.05" value="0"><output id="vh">0.00</output></div>
+    <div class="buttons"><button id="reiniciar" class="secondary">Restablecer</button><button id="ocultar" class="secondary">Ocultar ajustes</button></div>
+    <p style="font-size:11px;color:#cbd5e1;margin-bottom:0">Las medidas están en unidades relativas al ancho del marcador detectado, no en metros. Para esta prueba no hay escala métrica calibrada.</p>
+  </div>
+</div>
+<div class="bottom"><button id="abrir">Ajustar esfera</button><a href="marcador.html" target="_blank" rel="noopener">Ver marcador</a></div>
+<a-scene embedded vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true; antialias: true; alpha: true" arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;" >
+  <a-marker id="hiro" preset="hiro" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+    <a-entity id="esfera" position="0 0.28 0">
+      <a-sphere radius="0.28" color="#f43f5e" material="metalness: 0.12; roughness: 0.25"></a-sphere>
+      <a-light type="point" color="#ffffff" intensity="0.8" position="-0.6 1 1"></a-light>
+    </a-entity>
+  </a-marker>
+  <a-entity camera></a-entity>
+</a-scene>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const marker=$('hiro'), group=$('esfera'), status=$('estado');
+  const ids=['x','z','r','h'];
+  function update(){
+    const x=+$('x').value,z=+$('z').value,r=+$('r').value,h=+$('h').value;
+    group.setAttribute('position',`${x} ${h+r} ${z}`);
+    const ball=group.querySelector('a-sphere');ball.setAttribute('radius',r);
+    for(const id of ids) $('v'+id).textContent=(+$ (id).value).toFixed(2);
+  }
+  ids.forEach(id=>$(id).addEventListener('input',update));
+  marker.addEventListener('markerFound',()=>{status.textContent='Marcador detectado ✓';status.classList.add('ok')});
+  marker.addEventListener('markerLost',()=>{status.textContent='Buscando marcador HIRO…';status.classList.remove('ok')});
+  $('abrir').addEventListener('click',()=>{$('controles').classList.toggle('visible')});
+  $('ocultar').addEventListener('click',()=>{$('controles').classList.remove('visible')});
+  $('reiniciar').addEventListener('click',()=>{const init={x:0,z:0,r:.28,h:0};ids.forEach(k=>$(k).value=init[k]);update()});
+  update();
+})();
+</script>
+</body>
+</html>
